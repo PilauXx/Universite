@@ -1,0 +1,33 @@
+﻿@page
+@model Universite.Pages.Enseignants.DetailsModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div> 
+    <h4>UEs enseignées</h4> 
+    <table class="table"> 
+        <thead> 
+            <tr> 
+                <th> Numéro UE </th> 
+                <th> Intulé UE </th> 
+            </tr> 
+        </thead> 
+        <tbody> 
+            @foreach (var item in Model.Enseignant.LesEnseigner)
+            {
+                <tr> 
+                    <td> @Html.DisplayFor(modelItem => item.LUE.Numero) </td> 
+                    <td> @Html.DisplayFor(modelItem => item.LUE.Intitule) </td> 
+                </tr>
+             } 
+        </tbody> 
+    </table> 
+</div>
+<div>
+    <a asp-page="./Edit" asp-route-id="@Model.Enseignant.ID">Edit</a> |
+    <a asp-page="./Index">Back to List</a>
+</div>

@@ -1,0 +1,31 @@
+﻿@page
+@model Universite.Pages.CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Enseigner</h4>
+<hr />
+<div class="row"> 
+    <div class="col-md-4"> 
+        <form method="post"> 
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div> 
+                <input type="hidden" asp-for="Enseigner.LEnseignantID" value="@Model.Enseignant.ID" /> 
+            <div class="form-group"> 
+                <label asp-for="Enseigner.LUEID" class="control-label"></label> 
+                <select asp-for="Enseigner.LUEID" class="form-control" asp-items="ViewBag.LUEID"></select> 
+            </div> 
+            <div class="form-group"> 
+                <input type="submit" value="Create" class="btn btn-primary" /> 
+                <a asp-page="./Index" asp-route-id="@Model.Enseignant.ID">Retour à l'enseignant</a> 
+            </div> 
+        </form> 
+    </div> 
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
