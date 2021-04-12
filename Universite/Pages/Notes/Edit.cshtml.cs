@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Universite.Data;
 using Universite.Models;
+using Universite.VueModel;
 
 namespace Universite.Pages.Notes
 {
@@ -17,7 +18,12 @@ namespace Universite.Pages.Notes
 
         [BindProperty]
         public Enseigner Enseigner { get; set; }
-        public IList<Etudiant> Etudiant { get; set; }
+        public List<Etudiant> Etudiant { get; set; }
+
+        public List<Note> Note { get; set; }
+
+        [BindProperty]
+        public List<VueModelEtudNote> EtudiantNotes { get; set; }
 
         public EditModel(Universite.Data.ApplicationDbContext context)
         {
@@ -30,6 +36,7 @@ namespace Universite.Pages.Notes
             Etudiant = await _context.Etudiant
                 .Include(e => e.FormationSuivie)
                 .ToListAsync();
+            EtudiantNotes = new List<VueModelEtudNote>();
             return Page();
         }
 
@@ -40,21 +47,56 @@ namespace Universite.Pages.Notes
                 return Page();
             }
 
-
             int choise = Enseigner.LUEID;
             UE ue = await _context.UE.FindAsync(choise);
+            EtudiantNotes = new List<VueModelEtudNote>();
 
             Etudiant = await _context.Etudiant
                 .Include(e => e.FormationSuivie).Where(e => e.FormationSuivie.UEdansFormation.Contains(ue))
                 .ToListAsync();
-            
+            Note = await _context.Note
+                .Include(e => e.LUE).Where(e => e.LUE.Equals(ue))
+                .ToListAsync();
+
+            foreach(Etudiant e in Etudiant)
+            {
+                VueModelEtudNote etuNote = new VueModelEtudNote();
+                etuNote.Ue = ue;
+                etuNote.Etudiant = e;
+
+                etuNote.Note = Note.Find(x => x.etudiant.Equals(e));              
+
+                EtudiantNotes.Add(etuNote);
+            }            
             return Page();
         }
 
-/*        public async Task<IActionResult> OnPostSecondtAsync()
+      public async Task<IActionResult> OnPostSecondAsync()
         {
-            return await InsertCategory("Second");
-        }*/
+            if (!ModelState.IsValid)
+            {
+                return Page();
+            }
+
+            foreach (VueModelEtudNote e in EtudiantNotes)
+            {
+                Note note = new Note();
+                if(!e.Note.Equals(null))
+                {
+                    note = e.Note;
+                    if (e.Note.etudiant.Equals(null))
+                    {
+                        note.LUE = e.Ue;
+                        note.etudiant = e.Etudiant;
+                    }
+                    _context.Note.Add(note); 
+                }
+            }
+            await _context.SaveChangesAsync();
+
+            return Page();
+        }
+
 
     }
 }

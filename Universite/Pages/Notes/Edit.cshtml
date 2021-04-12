@@ -3,7 +3,15 @@
 
 @{
     ViewData["Title"] = "Edit";
+    int i = 0;
 }
+
+<script language="Javascript">
+    function bascule(elem) {
+        document.getElementById(elem).style.visibility = "visible";
+    }
+</script>
+
 
 <h1>Saisie</h1>
 
@@ -19,46 +27,46 @@
                 <select asp-for="Enseigner.LUEID" class="form-control" asp-items="ViewBag.LUEID"></select>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" asp-page-handler="First"/>
-                @*<a asp-page="./Index" asp-route-id="@Model.Enseignant.ID">Retour à l'enseignant</a>*@
+                <input type="submit" value="Select" class="btn btn-primary" asp-page-handler="First" onClick="bascule('form');" />
             </div>
         </form>
     </div>
 </div>
 
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Etudiant[0].Nom)
-                @Html.DisplayNameFor(model => model.Etudiant[0].Prenom)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Etudiant[0].FormationSuivie)
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model.Etudiant)
-        {
+<form method="post" id="form" style="visibility: hidden">
+    <table class="table">
+        <thead>
             <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Nom)
-
-                    @Html.DisplayFor(modelItem => item.Prenom)
-                </td>
                 <th>
-                    @Html.DisplayFor(modelItem => item.FormationSuivie.Intitule)
+                    <p>Etudiant</p>
                 </th>
-
+                <th>
+                    <p>Note</p>
+                </th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
 
-
-
+        <tbody>
+            @foreach (var item in Model.EtudiantNotes)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Etudiant.Nom)
+                        @Html.DisplayFor(modelItem => item.Etudiant.Prenom)
+                    </td>
+                    <th>
+                        <input asp-for="EtudiantNotes[i].Note.Valeur" class="form-control"
+                               value=@item.NoteToString />
+                    </th>
+                </tr>
+                i++;
+            }
+        </tbody>
+    </table>
+    <div class="form-group">
+        <input type="submit" value="Save" class="btn btn-primary" asp-page-handler="Second"/>
+    </div>
+</form>
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 }
