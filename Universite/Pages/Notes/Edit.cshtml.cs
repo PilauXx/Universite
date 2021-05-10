@@ -62,8 +62,9 @@ namespace Universite.Pages.Notes
             {
                 VueModelEtudNote etuNote = new VueModelEtudNote();
                 etuNote.Ue = ue;
+                etuNote.ueId = ue.ID;
                 etuNote.Etudiant = e;
-
+                etuNote.etudiantId = e.ID;
                 etuNote.Note = Note.Find(x => x.etudiant.Equals(e));              
 
                 EtudiantNotes.Add(etuNote);
@@ -80,23 +81,22 @@ namespace Universite.Pages.Notes
 
             foreach (VueModelEtudNote e in EtudiantNotes)
             {
-                Note note = new Note();
-                if(!e.Note.Equals(null))
-                {
-                    note = e.Note;
-                    if (e.Note.etudiant.Equals(null))
-                    {
-                        note.LUE = e.Ue;
-                        note.etudiant = e.Etudiant;
-                    }
-                    _context.Note.Add(note); 
-                }
+                VueModelEtudNote test = new VueModelEtudNote();
+                test = e;
+
+                Note noteAMettreAJour = _context.Note.Where(n => n.LUEID == e.ueId && n.etudiant.ID == e.etudiantId).Single();
+                noteAMettreAJour.Valeur = e.Valeur;
             }
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+               
+            }
 
             return Page();
         }
-
-
     }
 }
